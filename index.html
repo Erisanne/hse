@@ -3,256 +3,34 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>政府专项检查</title>
+  <title>HSE</title>
   <style>
-    :root { font-family: "Microsoft YaHei", Arial, sans-serif; color: #303133; background: #f5f6f8; }
     * { box-sizing: border-box; }
-    body { margin: 0; min-width: 320px; background: #f5f6f8; }
-    button, input, select { font: inherit; }
-    button { cursor: pointer; }
-    .app { min-height: 100vh; display: grid; grid-template-columns: 330px minmax(0, 1fr); }
-    .sidebar { display: flex; flex-direction: column; background: #ffffff; border-right: 1px solid #e7eaf0; color: #4c596d; }
-    .brand { min-height: 76px; display: flex; align-items: center; padding: 0 14px; border-bottom: 1px solid #eef0f4; color: #315efb; font-size: 28px; font-weight: 700; white-space: nowrap; }
-    .brand small { display: none; }
-    .nav-label { margin: 28px 34px 10px; color: #9aa4b2; font-size: 13px; }
-    .nav-item { width: calc(100% - 24px); margin: 0 12px; min-height: 48px; border: 0; border-left: 3px solid #315efb; border-radius: 0 4px 4px 0; background: #eef3ff; color: #315efb; padding: 12px 22px; text-align: left; font-weight: 600; }
-    .main { min-width: 0; }
-    .topbar { min-height: 76px; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; border-bottom: 1px solid #eef0f4; background: #ffffff; color: #475467; font-size: 16px; }
-    .topbar::before { content: "☰"; margin-right: 20px; color: #667085; font-size: 19px; }
-    .topbar #crumb { flex: 1; }
-    .module-tabs { display: flex; align-items: end; gap: 12px; height: 54px; padding: 0 24px; border-bottom: 1px solid #e7eaf0; background: #ffffff; color: #475467; font-size: 15px; }
-    .module-tab { display: inline-flex; align-items: center; height: 44px; padding: 0 22px; border-radius: 12px 12px 0 0; color: #315efb; font-weight: 600; }
-    .module-tab.active { background: #eaf0ff; }
-    .module-tab b { margin-left: 14px; color: #315efb; font-size: 18px; font-weight: 400; }
-    .content { max-width: none; margin: 0; padding: 22px 24px 36px; }
-    .page { display: none; }
-    .page.active { display: block; }
-    .heading { display: flex; align-items: center; justify-content: flex-start; gap: 16px; min-height: 78px; margin-bottom: 0; padding: 0 30px; border: 1px solid #e5e8ef; border-bottom: 0; border-radius: 6px 6px 0 0; background: #ffffff; }
-    .heading > :first-child { flex: 1; }
-    h1 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: 0; }
-    h2 { margin: 0; font-size: 16px; font-weight: 600; }
-    .subtitle { margin: 4px 0 0; color: #98a2b3; font-size: 12px; }
-    .filters, .detail-head, .table-wrap, .modal { border: 1px solid #e5e8ef; border-radius: 6px; background: #ffffff; }
-    .filters { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; padding: 16px 30px; margin-bottom: 14px; border-radius: 0; }
-    .filters label { display: flex; align-items: center; gap: 8px; color: #475467; font-size: 14px; }
-    label { display: grid; gap: 6px; color: #475467; font-size: 13px; }
-    input, select { min-width: 170px; min-height: 36px; border: 1px solid #d8dee9; border-radius: 4px; background: #ffffff; color: #303133; padding: 7px 10px; }
-    .primary, .secondary, .link, .tab { min-height: 34px; border-radius: 4px; padding: 6px 13px; }
-    .primary { border: 1px solid #315efb; background: #315efb; color: #ffffff; font-weight: 500; }
-    .primary:hover { background: #214ce5; }
-    button:disabled { cursor: not-allowed; opacity: .5; }
-    .secondary { border: 1px solid #9bb5ff; background: #ffffff; color: #315efb; }
-    .secondary:hover { background: #f2f5ff; }
-    .link { min-height: auto; border: 0; background: transparent; color: #315efb; padding: 0 4px; }
-    .link:hover { text-decoration: underline; }
-    .table-wrap { overflow-x: auto; border-radius: 0 0 6px 6px; }
-    table { width: 100%; min-width: 760px; border-collapse: collapse; font-size: 14px; }
-    th, td { padding: 14px 16px; border-right: 1px solid #e8ebf0; border-bottom: 1px solid #e8ebf0; text-align: left; vertical-align: middle; }
-    th { background: #f7f8fa; color: #475467; font-size: 14px; font-weight: 600; }
-    tr:last-child td { border-bottom: 0; }
-    tr.clickable { cursor: pointer; }
-    tr.clickable:hover td { background: #f8faff; }
-    .empty { color: #98a2b3; text-align: center; }
-    .tag { display: inline-block; border-radius: 4px; padding: 4px 9px; font-size: 12px; font-weight: 500; }
-    .tag.active { background: #e7f8ed; color: #25b36a; }
-    .tag.pending { background: #fff3e3; color: #f79009; }
-    .tag.progress { background: #e8f3ff; color: #2588f7; }
-    .tag.danger { background: #fef3f2; color: #d92d20; }
-    .detail-head { padding: 18px 20px; margin-bottom: 16px; }
-    .detail-head .heading { min-height: 34px; margin: 0; padding: 0; border: 0; }
-    .detail-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px 18px; margin-top: 15px; }
-    .meta { color: #98a2b3; font-size: 13px; }
-    .meta strong { display: block; margin-top: 5px; color: #303133; font-size: 14px; font-weight: 500; }
-    .tabs { display: flex; gap: 10px; margin-bottom: 14px; padding: 0 14px; border: 1px solid #e5e8ef; border-bottom: 1px solid #e5e8ef; border-radius: 6px 6px 0 0; background: #ffffff; }
-    .tab { min-height: 46px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: transparent; color: #667085; font-weight: 500; }
-    .tab.active { border-bottom-color: #315efb; color: #315efb; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-    .panel-actions { display: flex; justify-content: flex-end; gap: 10px; align-items: end; padding: 12px 20px; margin: 0; border: 1px solid #e5e8ef; border-top: 0; background: #ffffff; }
-    .modal-backdrop { position: fixed; inset: 0; z-index: 10; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(16, 24, 40, .42); }
-    .modal-backdrop.open { display: flex; }
-    .modal { width: min(760px, 100%); max-height: calc(100vh - 40px); border-radius: 6px; overflow: auto; box-shadow: 0 16px 44px rgba(16, 24, 40, .2); }
-    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 17px 20px; border-bottom: 1px solid #e7eaf0; }
-    .close { width: 32px; height: 32px; border: 0; border-radius: 4px; background: transparent; color: #667085; font-size: 22px; line-height: 1; }
-    .close:hover { background: #f2f4f7; }
-    form { padding: 20px; }
-    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px 16px; }
-    .full { grid-column: 1 / -1; }
-    .readonly { min-height: 36px; display: flex; align-items: center; border: 1px solid #d8dee9; border-radius: 4px; background: #f7f8fa; color: #667085; padding: 7px 10px; }
-    .required::after { content: " *"; color: #b42318; }
-    .hint { color: #98a2b3; font-size: 12px; }
-    .modal-footer { display: flex; justify-content: flex-end; gap: 9px; padding: 14px 20px; border-top: 1px solid #e7eaf0; }
-    .score-content { padding: 18px 20px; }
-    .toast { position: fixed; right: 24px; bottom: 24px; z-index: 20; display: none; border-radius: 4px; background: #303133; color: #ffffff; padding: 11px 14px; box-shadow: 0 7px 20px rgba(16, 24, 40, .2); font-size: 13px; }
-    .toast.show { display: block; }
-    @media (max-width: 960px) { .app { grid-template-columns: 230px minmax(0, 1fr); } .brand { font-size: 20px; } }
-    @media (max-width: 760px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } .topbar { padding: 0 16px; } .content { padding: 16px; } .detail-grid, .form-grid { grid-template-columns: 1fr; } .full { grid-column: auto; } .heading { padding: 0 12px; } }
+    body { margin: 0; background: #f5f7fa; color: #1f2937; font-family: "Microsoft YaHei", Arial, sans-serif; }
+    header { height: 64px; display: flex; align-items: center; padding: 0 40px; background: #ffffff; border-bottom: 1px solid #e5e7eb; color: #1677ff; font-size: 20px; font-weight: 700; }
+    main { max-width: 1080px; margin: 0 auto; padding: 40px; }
+    h1 { margin: 0 0 8px; font-size: 24px; }
+    p { margin: 0 0 28px; color: #64748b; }
+    section { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; }
+    h2 { margin: 0; padding: 18px 22px; border-bottom: 1px solid #e5e7eb; font-size: 16px; }
+    a { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; color: #1f2937; text-decoration: none; }
+    a:hover { background: #f0f7ff; }
+    .name { font-weight: 600; }
+    .path { color: #1677ff; font-size: 13px; }
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar"><div class="brand">九丰SAFE-LINK系统<small>政府数据对接</small></div><div class="nav-label">双重预防</div><button class="nav-item" type="button" data-home>政府专项检查</button></aside>
-    <main class="main">
-      <header class="topbar"><span id="crumb">首页　/　政府专项检查</span><span>海南航天　⌄</span></header>
-      <div class="module-tabs"><span>首页</span><span class="module-tab active">政府专项检查 <b>&times;</b></span></div>
-      <div class="content">
-        <section class="page active" data-view="tasks">
-          <div class="heading"><div><h1>专项检查任务</h1><p class="subtitle">一次下载依次获取任务、任务详情和评分细则；点击任务仅查看已下载数据。</p></div><button class="primary" type="button" data-download>下载专项检查任务</button></div>
-          <div class="filters"><label>任务类型<select><option>全部</option><option>重大危险源督导</option><option>市级专项检查</option></select></label><label>任务状态<select><option>全部</option><option>进行中</option><option>未开始</option></select></label><button id="comp-items" class="secondary" type="button" disabled>下载任务详情</button><button id="comp-scores" class="secondary" type="button" disabled>下载评分细则</button></div>
-          <div class="table-wrap"><table><thead><tr><th>任务名称</th><th>任务类型</th><th>开始日期</th><th>结束日期</th><th>任务</th><th>任务详情</th><th>评分细则</th><th>操作</th></tr></thead><tbody id="task-rows"><tr><td colspan="8" class="empty">请点击“下载专项检查任务”获取任务、任务详情和评分细则。</td></tr></tbody></table></div>
-        </section>
-
-        <section class="page" data-view="detail">
-          <div class="heading"><div><h1>检查任务详情</h1><p class="subtitle">在同一任务内切换检查任务、检查情况、停用/检修记录。</p></div><button class="secondary" type="button" data-go="tasks">返回任务列表</button></div>
-          <div class="detail-head"><div class="heading"><h2 id="task-name">-</h2><button id="complete-task" class="primary" type="button">任务完成</button></div><div class="detail-grid"><div class="meta">任务类型<strong id="task-type">-</strong></div><div class="meta">任务开始日期<strong>2026-08-01</strong></div><div class="meta">任务结束日期<strong>2026-12-31</strong></div><div class="meta">任务状态<strong id="task-status">未完成</strong></div></div></div>
-          <div class="tabs" role="tablist"><button class="tab active" type="button" data-tab="items">检查任务</button><button class="tab" type="button" data-tab="checks">检查情况</button><button class="tab" type="button" data-tab="stops">停用/检修记录</button></div>
-          <section class="tab-panel active" data-panel="items"><div class="panel-actions"><button class="secondary" type="button" data-import>隐患导入</button><button class="primary" type="button" data-open="danger">隐患录入</button></div><div class="table-wrap"><table><thead><tr><th>检查项</th><th>检查内容</th><th>检查依据</th><th>适用场所</th><th>是否隐患</th><th>隐患整改</th><th>同步状态</th><th>操作</th></tr></thead><tbody id="item-rows"></tbody></table></div></section>
-          <section class="tab-panel" data-panel="checks"><div class="panel-actions"><button class="primary" type="button" data-open="check">新增检查情况</button></div><div class="table-wrap"><table><thead><tr><th>检查类型</th><th>危险源</th><th>检查日期</th><th>检查结果</th><th>创建人</th><th>记录状态</th><th>上报状态</th><th>操作</th></tr></thead><tbody id="check-rows"></tbody></table></div></section>
-          <section class="tab-panel" data-panel="stops"><div class="panel-actions"><button class="primary" type="button" data-open="stop">新增停用/检修</button></div><div class="table-wrap"><table><thead><tr><th>风险分析对象</th><th>风险单元</th><th>开始时间</th><th>结束时间</th><th>停用/检修原因</th><th>记录状态</th><th>上报状态</th><th>操作</th></tr></thead><tbody id="stop-rows"></tbody></table></div></section>
-        </section>
-      </div>
-    </main>
-  </div>
-
-  <input id="import-file" type="file" accept=".xlsx,.xls,.csv" hidden>
-  <div id="score-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="score-title"><div class="modal"><div class="modal-header"><h2 id="score-title">评分细则</h2><button class="close" type="button" aria-label="关闭" data-close>&times;</button></div><div class="score-content"><p class="subtitle" id="score-context">-</p><div class="table-wrap"><table><thead><tr><th>是否否决项</th><th>扣分分值</th><th>扣分说明</th><th>状态</th></tr></thead><tbody id="score-rows"></tbody></table></div></div><div class="modal-footer"><button class="primary" type="button" data-close>关闭</button></div></div></div>
-
-  <div id="related-danger-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="related-danger-title"><div class="modal"><div class="modal-header"><h2 id="related-danger-title">隐患整改</h2><button class="close" type="button" aria-label="关闭" data-close>&times;</button></div><div class="score-content"><p class="subtitle" id="related-danger-context">-</p><div class="table-wrap"><table><thead><tr><th>整改单编号</th><th>整改事项</th><th>隐患等级</th><th>整改状态</th><th>创建时间</th></tr></thead><tbody id="related-danger-rows"></tbody></table></div></div><div class="modal-footer"><button class="primary" type="button" data-close>关闭</button></div></div></div>
-
-  <div id="danger-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="danger-title"><div class="modal"><div class="modal-header"><h2 id="danger-title">隐患录入</h2><button class="close" type="button" aria-label="关闭" data-close>&times;</button></div><form data-form="danger"><div class="form-grid"><label><span>当前专项任务</span><span class="readonly" id="danger-task">-</span></label><label><span class="required">检查项</span><select id="danger-item" required></select></label><label><span class="required">评分细则</span><select id="danger-score" required></select></label><label><span class="required">整改单</span><select required><option value="">请选择</option><option>DG-20260820-001 液位计红线模糊（政府级 / 整改中）</option><option>DG-20260819-002 防火间距不足（政府级 / 待验收）</option><option>DG-20260818-003 安全阀超期（政府级 / 已完成）</option></select><span class="hint">仅可选择系统内已存在的整改单。</span></label><label><span class="required">检查类型</span><select required><option>企业自查</option><option>市级及以下检查</option><option>省级检查</option><option>部级检查</option></select></label><label><span class="required">检查日期</span><input type="date" required value="2026-08-20"></label><label>罚款金额（元）<input type="number" min="0" placeholder="0.00"></label><label><span class="required">危害类型</span><select required><option>事故隐患</option><option>火灾隐患</option></select></label></div><div class="modal-footer"><button class="secondary" type="button" data-close>取消</button><button class="primary" type="submit">提交上报</button></div></form></div></div>
-
-  <div id="check-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="check-title"><div class="modal"><div class="modal-header"><h2 id="check-title">新增检查情况</h2><button class="close" type="button" aria-label="关闭" data-close>&times;</button></div><form data-form="check"><input id="check-id" type="hidden"><div class="form-grid"><label class="full"><span>当前专项任务</span><span class="readonly" id="check-task">-</span></label><label><span class="required">检查类型</span><select id="check-type" required><option>企业自查</option><option>市级及以下检查</option><option>省级检查</option><option>部级检查</option></select></label><label id="hazard-field"><span class="required">危险源</span><select id="check-hazard-source" required><option>罐区重大危险源</option><option>反应装置危险源</option></select><span class="hint">重大危险源督导任务必须选择危险源。</span></label><label><span class="required">检查日期</span><input id="check-date" type="date" required value="2026-08-20"></label><label><span class="required">检查结果</span><select id="check-result" required><option>正常</option><option>停产整顿</option></select></label></div><div class="modal-footer"><button class="secondary" type="button" data-close>取消</button><button class="secondary" type="submit" data-save="draft">暂存</button><button class="primary" type="submit" data-save="submitted">提交上报</button></div></form></div></div>
-
-  <div id="stop-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="stop-title"><div class="modal"><div class="modal-header"><h2 id="stop-title">新增停用/检修</h2><button class="close" type="button" aria-label="关闭" data-close>&times;</button></div><form data-form="stop"><input id="stop-id" type="hidden"><div class="form-grid"><label class="full"><span>当前专项任务</span><span class="readonly" id="stop-task">-</span><span class="hint">任务仅用于页面操作追溯，不传入停用/检修接口。</span></label><label><span class="required">风险分析对象</span><select id="stop-object" required><option>罐区重大危险源</option><option>反应装置危险源</option></select></label><label><span class="required">风险单元</span><select id="stop-unit" required><option>反应器 A</option><option>储罐区 B</option></select></label><label><span class="required">开始时间</span><input id="stop-start" type="datetime-local" required value="2026-08-20T08:00"></label><label>结束时间<input id="stop-end" type="datetime-local"></label><label class="full"><span class="required">停用/检修原因</span><input id="stop-reason" type="text" required placeholder="请输入停用或检修原因"></label></div><div class="modal-footer"><button class="secondary" type="button" data-close>取消</button><button class="secondary" type="submit" data-save="draft">暂存</button><button class="primary" type="submit" data-save="submitted">提交上报</button></div></form></div></div>
-  <div class="toast" role="status" aria-live="polite"></div>
-
-  <script>
-    const state = {
-      task: null, activeTab: 'items', tasksDownloaded: false,
-      itemDownloaded: { major: false, city: false }, scoreDownloaded: { major: false, city: false },
-      records: {
-        major: {
-          completed: false,
-          checks: [
-            { id: 'check-1', type: '企业自查', hazardSource: '罐区重大危险源', date: '2026-08-18', result: '正常', creator: '张工', status: 'submitted' },
-            { id: 'check-2', type: '省级检查', hazardSource: '反应装置危险源', date: '2026-08-20', result: '正常', creator: '安全管理人员', status: 'draft' }
-          ],
-          stops: [{ id: 'stop-1', object: '罐区重大危险源', unit: '储罐区 B', start: '2026-08-17T08:00', end: '', reason: '停工检修', status: 'submitted' }]
-        },
-        city: { completed: false, checks: [], stops: [] }
-      }
-    };
-    const tasks = {
-      major: { name: '2026 危险化学品重大危险源企业安全专项检查督导', type: '重大危险源督导', items: [{ id: 'tank', name: '1.1 储罐区安全设施', content: '重大危险源储罐安全附件是否完好有效。', basis: '危险化学品企业重大危险源安全包保责任制办法', place: '储罐单元', scores: [{ reject: '否', point: '5', text: '安全附件存在失效、缺失情况。' }, { reject: '是', point: '10', text: '重大安全附件未按规定检测。' }] }, { id: 'pressure', name: '1.2 压力容器管理', content: '压力容器检验与台账是否完整。', basis: '特种设备安全法', place: '反应单元', scores: [{ reject: '否', point: '5', text: '检验台账记录不完整。' }] }] },
-      city: { name: '2026 市级危险化学品专项检查', type: '市级专项检查', items: [{ id: 'spacing', name: '2.1 防火间距管理', content: '装置、储罐与周边建构筑物的间距是否符合要求。', basis: '石油化工企业设计防火标准', place: '罐区', scores: [{ reject: '否', point: '5', text: '防火间距标识不清晰。' }, { reject: '否', point: '10', text: '防火间距不符合设计要求。' }] }] }
-    };
-    const taskHazards = { major: { tank: true, pressure: false }, city: { spacing: true } };
-    const rectifications = {
-      major: {
-        tank: [{ code: 'DG-20260820-001', name: '液位计红线模糊', level: '一般', status: '整改中', date: '2026-08-18 09:30:00' }],
-        pressure: []
-      },
-      city: {
-        spacing: [{ code: 'DG-20260819-002', name: '防火间距不足', level: '较大', status: '待验收', date: '2026-08-19 14:10:00' }]
-      }
-    };
-    // 本地同步任务：未关联整改单时为 null；取消关联仍保留原 dangerId 供 deleted=1 上报。
-    const rectificationSyncTasks = {
-      major: { tank: { dangerId: 'danger-major-tank-001', operation: 'upsert', status: 'pending' }, pressure: null },
-      city: { spacing: { dangerId: 'danger-city-spacing-001', operation: 'upsert', status: 'pending' } }
-    };
-    const toast = document.querySelector('.toast');
-    function showToast(message) { toast.textContent = message; toast.classList.add('show'); window.setTimeout(() => toast.classList.remove('show'), 2200); }
-    function task() { return tasks[state.task]; }
-    function recordSet() { return state.records[state.task]; }
-    function locked() { return recordSet().completed; }
-    function go(view) { document.querySelectorAll('.page').forEach(page => page.classList.toggle('active', page.dataset.view === view)); document.getElementById('crumb').textContent = '政府专项检查 / ' + (view === 'tasks' ? '专项检查任务' : '检查任务详情'); }
-    function openModal(id) { document.getElementById(id).classList.add('open'); }
-    function closeModal(backdrop) { backdrop.classList.remove('open'); }
-    function statusTag(success) { return success ? '<span class="tag active">已下载</span>' : '<span class="tag pending">待补偿</span>'; }
-    function renderTaskRows() { document.getElementById('task-rows').innerHTML = Object.entries(tasks).map(([key, value]) => { const details = state.itemDownloaded[key]; const scores = state.scoreDownloaded[key]; const action = details ? `<button class="link" type="button" data-open-task="${key}">查看任务</button>` : '<span class="hint">先下载任务详情</span>'; return `<tr class="${details ? 'clickable' : ''}" data-task="${details ? key : ''}"><td>${value.name}</td><td>${value.type}</td><td>2026-08-01</td><td>2026-12-31</td><td>${statusTag(true)}</td><td>${statusTag(details)}</td><td>${statusTag(scores)}</td><td>${action}</td></tr>`; }).join(''); document.getElementById('comp-items').disabled = !state.tasksDownloaded || Object.values(state.itemDownloaded).every(Boolean); document.getElementById('comp-scores').disabled = !state.tasksDownloaded || Object.values(state.itemDownloaded).some(value => !value) || Object.values(state.scoreDownloaded).every(Boolean); }
-    function rectificationsFor(itemId) { return rectifications[state.task][itemId] || []; }
-    function syncStatusTag(itemId) { const syncTask = rectificationSyncTasks[state.task][itemId]; if (!syncTask) return '<span class="hint">-</span>'; if (syncTask.status === 'pending-cancel') return '<span class="tag progress">待取消同步</span>'; if (syncTask.status === 'success') return '<span class="tag active">同步成功</span>'; if (syncTask.status === 'cancelled') return '<span class="tag active">已取消</span>'; if (syncTask.status === 'failed') return '<span class="tag danger">同步失败</span>'; return '<span class="tag pending">待同步</span>'; }
-    function renderItems() { const scoreReady = state.scoreDownloaded[state.task]; document.getElementById('item-rows').innerHTML = task().items.map(item => { const rectificationCount = rectificationsFor(item.id).length; const rectificationAction = rectificationCount ? `<button class="link" type="button" data-rectifications="${item.id}">查看隐患整改（${rectificationCount}）</button>` : '<span class="hint">暂无隐患整改</span>'; const cancelAction = rectificationCount && !locked() ? `<button class="link" type="button" data-cancel-rectification="${item.id}">取消关联</button>` : ''; const hazard = taskHazards[state.task][item.id]; const scoreAction = scoreReady ? `<button class="link" type="button" data-score="${item.id}">评分细则</button>` : '<span class="hint">评分细则待补偿下载</span>'; return `<tr><td>${item.name}</td><td>${item.content}</td><td>${item.basis}</td><td>${item.place}</td><td>${hazard ? '<span class="tag pending">是</span>' : '否'}</td><td>${rectificationAction}</td><td>${syncStatusTag(item.id)}</td><td>${scoreAction} ${cancelAction}</td></tr>`; }).join(''); }
-    function recordStatusTag(status) { return status === 'submitted' ? '<span class="tag active">已提交</span>' : '<span class="tag progress">草稿</span>'; }
-    function reportStatusTag(status) { return status === 'submitted' ? '<span class="tag pending">待同步</span>' : '<span class="hint">未上报</span>'; }
-    function formatDateTime(value) { return value ? value.replace('T', ' ') : '-'; }
-    function actionsFor(record, kind) {
-      if (locked()) return '<span class="hint">任务已完成，只读</span>';
-      if (record.status !== 'draft') return '<span class="hint">已提交，不可编辑</span>';
-      return `<button class="link" type="button" data-edit-${kind}="${record.id}">编辑</button><button class="link" type="button" data-delete-${kind}="${record.id}">删除</button>`;
-    }
-    function renderDetails() {
-      const checks = recordSet().checks;
-      document.getElementById('check-rows').innerHTML = checks.length ? checks.map(record => `<tr><td>${record.type}</td><td>${record.hazardSource || '-'}</td><td>${record.date}</td><td><span class="tag active">${record.result}</span></td><td>${record.creator}</td><td>${recordStatusTag(record.status)}</td><td>${reportStatusTag(record.status)}</td><td>${actionsFor(record, 'check')}</td></tr>`).join('') : '<tr><td colspan="8" class="empty">暂无检查情况。</td></tr>';
-      const stops = recordSet().stops;
-      document.getElementById('stop-rows').innerHTML = stops.length ? stops.map(record => `<tr><td>${record.object}</td><td>${record.unit}</td><td>${formatDateTime(record.start)}</td><td>${formatDateTime(record.end)}</td><td>${record.reason}</td><td>${recordStatusTag(record.status)}</td><td>${reportStatusTag(record.status)}</td><td>${actionsFor(record, 'stop')}</td></tr>`).join('') : '<tr><td colspan="8" class="empty">暂无停用/检修记录。</td></tr>';
-      refreshReadOnlyState();
-    }
-    function refreshReadOnlyState() {
-      const isLocked = locked();
-      const scoreReady = state.scoreDownloaded[state.task];
-      document.getElementById('task-status').textContent = isLocked ? '已完成' : '未完成';
-      const complete = document.getElementById('complete-task'); complete.disabled = isLocked; complete.textContent = isLocked ? '任务已完成' : '任务完成';
-      document.querySelector('[data-open="danger"]').disabled = isLocked || !scoreReady;
-      document.querySelector('[data-import]').disabled = isLocked || !scoreReady;
-      document.querySelector('[data-open="check"]').disabled = isLocked;
-      document.querySelector('[data-open="stop"]').disabled = isLocked;
-    }
-    function openTask(key) { state.task = key; document.getElementById('task-name').textContent = task().name; document.getElementById('task-type').textContent = task().type; renderItems(); renderDetails(); switchTab('items'); showToast('正在查看已下载的任务详情'); go('detail'); }
-    function switchTab(name) { state.activeTab = name; document.querySelectorAll('.tab').forEach(tab => tab.classList.toggle('active', tab.dataset.tab === name)); document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.toggle('active', panel.dataset.panel === name)); }
-    function setupDanger() { document.getElementById('danger-task').textContent = task().name; document.getElementById('danger-item').innerHTML = task().items.map(item => `<option value="${item.id}">${item.name}</option>`).join(''); renderDangerScores(); }
-    function renderDangerScores() { const item = task().items.find(value => value.id === document.getElementById('danger-item').value); document.getElementById('danger-score').innerHTML = item.scores.map((score, index) => `<option value="${index}">${score.reject === '是' ? '否决项' : '非否决项'} / 扣分 ${score.point} 分 / ${score.text}</option>`).join(''); }
-    function openScore(itemId) { const item = task().items.find(value => value.id === itemId); document.getElementById('score-context').textContent = task().name + ' / ' + item.name; document.getElementById('score-rows').innerHTML = item.scores.map(score => `<tr><td>${score.reject}</td><td>${score.point}</td><td>${score.text}</td><td><span class="tag active">有效</span></td></tr>`).join(''); showToast('正在查看已下载的评分细则'); openModal('score-modal'); }
-    function openRectifications(itemId) { const item = task().items.find(value => value.id === itemId); const list = rectificationsFor(itemId); document.getElementById('related-danger-context').textContent = `${task().name} / ${item.name}：已查询到 ${list.length} 条隐患整改`; document.getElementById('related-danger-rows').innerHTML = list.length ? list.map(record => `<tr><td>${record.code}</td><td>${record.name}</td><td>${record.level}</td><td><span class="tag pending">${record.status}</span></td><td>${record.date}</td></tr>`).join('') : '<tr><td colspan="5" class="empty">未查询到隐患整改。</td></tr>'; openModal('related-danger-modal'); }
-    function openBusinessModal(kind, id = '') {
-      if (locked()) { showToast('任务已完成，内部明细不可更新'); return; }
-      if (kind === 'danger') { setupDanger(); openModal('danger-modal'); return; }
-      if (kind === 'check') {
-        const record = recordSet().checks.find(value => value.id === id);
-        const required = task().type === '重大危险源督导'; const field = document.getElementById('hazard-field');
-        field.querySelector('select').required = required; field.querySelector('span').classList.toggle('required', required); field.querySelector('.hint').textContent = required ? '重大危险源督导任务必须选择危险源。' : '当前任务类型下危险源为可选。';
-        document.getElementById('check-title').textContent = record ? '编辑检查情况' : '新增检查情况'; document.getElementById('check-task').textContent = task().name; document.getElementById('check-id').value = record ? record.id : '';
-        document.getElementById('check-type').value = record ? record.type : '企业自查'; document.getElementById('check-hazard-source').value = record ? record.hazardSource : '罐区重大危险源'; document.getElementById('check-date').value = record ? record.date : '2026-08-20'; document.getElementById('check-result').value = record ? record.result : '正常';
-        openModal('check-modal'); return;
-      }
-      const record = recordSet().stops.find(value => value.id === id);
-      document.getElementById('stop-title').textContent = record ? '编辑停用/检修' : '新增停用/检修'; document.getElementById('stop-task').textContent = task().name; document.getElementById('stop-id').value = record ? record.id : '';
-      document.getElementById('stop-object').value = record ? record.object : '罐区重大危险源'; document.getElementById('stop-unit').value = record ? record.unit : '反应器 A'; document.getElementById('stop-start').value = record ? record.start : '2026-08-20T08:00'; document.getElementById('stop-end').value = record ? record.end : ''; document.getElementById('stop-reason').value = record ? record.reason : '';
-      openModal('stop-modal');
-    }
-    function saveCheck(status) {
-      const id = document.getElementById('check-id').value; const record = { id: id || `check-${Date.now()}`, type: document.getElementById('check-type').value, hazardSource: document.getElementById('check-hazard-source').value, date: document.getElementById('check-date').value, result: document.getElementById('check-result').value, creator: '安全管理人员', status };
-      const index = recordSet().checks.findIndex(value => value.id === id); if (index >= 0) recordSet().checks.splice(index, 1, record); else recordSet().checks.unshift(record);
-    }
-    function saveStop(status) {
-      const id = document.getElementById('stop-id').value; const record = { id: id || `stop-${Date.now()}`, object: document.getElementById('stop-object').value, unit: document.getElementById('stop-unit').value, start: document.getElementById('stop-start').value, end: document.getElementById('stop-end').value, reason: document.getElementById('stop-reason').value, status };
-      const index = recordSet().stops.findIndex(value => value.id === id); if (index >= 0) recordSet().stops.splice(index, 1, record); else recordSet().stops.unshift(record);
-    }
-    function saveDanger() { const itemId = document.getElementById('danger-item').value; const list = rectificationsFor(itemId); taskHazards[state.task][itemId] = true; list.unshift({ code: `DG-20260820-${String(list.length + 3).padStart(3, '0')}`, name: '专项检查录入整改事项', level: '一般', status: '整改中', date: '2026-08-20 10:00:00' }); rectificationSyncTasks[state.task][itemId] = { dangerId: `danger-${state.task}-${itemId}-${Date.now()}`, operation: 'upsert', status: 'pending' }; renderItems(); }
-    function cancelRectification(itemId) { const list = rectificationsFor(itemId); const syncTask = rectificationSyncTasks[state.task][itemId]; if (!list.length || !syncTask || locked()) return; if (!window.confirm('确认取消该检查项与隐患整改的关联？系统将创建取消同步任务。')) return; rectifications[state.task][itemId] = []; taskHazards[state.task][itemId] = false; rectificationSyncTasks[state.task][itemId] = { dangerId: syncTask.dangerId, operation: 'delete', status: 'pending-cancel' }; renderItems(); showToast('已取消关联，已创建待取消同步任务'); }
-    document.querySelector('[data-home]').addEventListener('click', () => go('tasks'));
-    document.querySelectorAll('[data-go]').forEach(button => button.addEventListener('click', () => go(button.dataset.go)));
-    document.querySelectorAll('[data-download]').forEach(button => button.addEventListener('click', () => { state.tasksDownloaded = true; state.itemDownloaded.major = true; state.scoreDownloaded.major = true; state.itemDownloaded.city = false; state.scoreDownloaded.city = false; renderTaskRows(); showToast('任务已下载；存在任务详情待补偿下载'); }));
-    document.getElementById('comp-items').addEventListener('click', () => { state.itemDownloaded.city = true; renderTaskRows(); showToast('已补偿下载任务详情；存在评分细则待补偿下载'); });
-    document.getElementById('comp-scores').addEventListener('click', () => { state.scoreDownloaded.city = true; renderTaskRows(); showToast('已补偿下载评分细则'); });
-    document.getElementById('task-rows').addEventListener('click', event => { const row = event.target.closest('[data-task]'); if (row && row.dataset.task) openTask(row.dataset.task); });
-    document.querySelectorAll('.tab').forEach(button => button.addEventListener('click', () => switchTab(button.dataset.tab)));
-    document.getElementById('item-rows').addEventListener('click', event => { const scoreButton = event.target.closest('[data-score]'); const rectificationButton = event.target.closest('[data-rectifications]'); const cancelButton = event.target.closest('[data-cancel-rectification]'); if (scoreButton) openScore(scoreButton.dataset.score); if (rectificationButton) openRectifications(rectificationButton.dataset.rectifications); if (cancelButton) cancelRectification(cancelButton.dataset.cancelRectification); });
-    document.querySelectorAll('[data-open]').forEach(button => button.addEventListener('click', () => openBusinessModal(button.dataset.open)));
-    document.getElementById('check-rows').addEventListener('click', event => {
-      const id = event.target.dataset.editCheck || event.target.dataset.deleteCheck; if (!id) return;
-      if (event.target.dataset.editCheck) openBusinessModal('check', id);
-      if (event.target.dataset.deleteCheck && window.confirm('确认删除该草稿检查情况？')) { recordSet().checks = recordSet().checks.filter(value => value.id !== id); renderDetails(); showToast('草稿检查情况已删除'); }
-    });
-    document.getElementById('stop-rows').addEventListener('click', event => { const id = event.target.dataset.editStop || event.target.dataset.deleteStop; if (!id) return; if (event.target.dataset.editStop) openBusinessModal('stop', id); if (event.target.dataset.deleteStop && window.confirm('确认删除该草稿停用/检修记录？')) { recordSet().stops = recordSet().stops.filter(value => value.id !== id); renderDetails(); showToast('草稿停用/检修记录已删除'); } });
-    document.getElementById('complete-task').addEventListener('click', () => { const data = recordSet(); const all = data.checks.concat(data.stops); if (all.some(record => record.status === 'draft')) { showToast('存在草稿检查情况或停用/检修记录，不能完成任务'); return; } if (!all.some(record => record.status === 'submitted')) { showToast('至少需存在 1 条已提交的检查情况或停用/检修记录'); return; } data.completed = true; renderDetails(); showToast('任务已完成，详情已锁定为只读'); });
-    document.querySelector('[data-import]').addEventListener('click', () => document.getElementById('import-file').click());
-    document.getElementById('import-file').addEventListener('change', event => { if (event.target.files.length) showToast('已上传 ' + event.target.files[0].name + '，正在校验整改单关联关系'); });
-    document.getElementById('danger-item').addEventListener('change', renderDangerScores);
-    document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => closeModal(button.closest('.modal-backdrop'))));
-    document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.addEventListener('click', event => { if (event.target === backdrop) closeModal(backdrop); }));
-    document.querySelectorAll('[data-form]').forEach(form => form.addEventListener('submit', event => { event.preventDefault(); if (!form.reportValidity()) return; if (form.dataset.form === 'danger') { saveDanger(); closeModal(form.closest('.modal-backdrop')); showToast('已关联隐患整改，已创建待同步任务'); return; } const status = event.submitter && event.submitter.dataset.save; if (!status) return; if (form.dataset.form === 'stop') { const start = document.getElementById('stop-start').value; const end = document.getElementById('stop-end').value; if (end && end < start) { showToast('结束时间不得早于开始时间'); return; } saveStop(status); switchTab('stops'); } if (form.dataset.form === 'check') { saveCheck(status); switchTab('checks'); } closeModal(form.closest('.modal-backdrop')); renderDetails(); showToast(status === 'draft' ? '已暂存为草稿，未触发上报' : '记录已提交，已写入待同步列表'); }));
-  </script>
+  <header>HSE</header>
+  <main>
+    <h1>模块原型</h1>
+    <p>按 HSE 业务模块访问对应页面原型。</p>
+    <section>
+      <h2>双预防</h2>
+      <a href="./双预防/政府专项检查/">
+        <span class="name">政府专项检查</span>
+        <span class="path">打开原型</span>
+      </a>
+    </section>
+  </main>
 </body>
 </html>
